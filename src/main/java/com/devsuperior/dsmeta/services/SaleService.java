@@ -12,7 +12,9 @@ import org.springframework.stereotype.Service;
 
 import com.devsuperior.dsmeta.dto.ReportMinDTO;
 import com.devsuperior.dsmeta.dto.SaleMinDTO;
+import com.devsuperior.dsmeta.dto.SummaryDTO;
 import com.devsuperior.dsmeta.entities.Sale;
+import com.devsuperior.dsmeta.projections.SummaryProjection;
 import com.devsuperior.dsmeta.repositories.SaleRepository;
 
 @Service
@@ -28,12 +30,32 @@ public class SaleService {
 	}
 	
 	public Page<ReportMinDTO> report(String minDate, String maxDate, String name, Pageable pageable){
-		LocalDate today = LocalDate.ofInstant(Instant.now(), ZoneId.systemDefault());
-		LocalDate startDate = minDate != null && !"".equals(minDate) ? LocalDate.parse(minDate) : today.minusYears(1L);
-		LocalDate finalDate = maxDate != null && !"".equals(maxDate) ? LocalDate.parse(maxDate) : today;
+		LocalDate startDate = minDate != null && !"".equals(minDate) ? LocalDate.parse(minDate) : getToday().minusYears(1L);
+		LocalDate finalDate = maxDate != null && !"".equals(maxDate) ? LocalDate.parse(maxDate) : getToday();
 		
 		Page<Sale> vendas = repository.report(startDate, finalDate, name, pageable);
 		
 		return vendas.map(x -> new ReportMinDTO(x));
+	}
+
+	public Page<SummaryDTO> sumary(String minDate, String maxDate, Pageable pageable) {
+		LocalDate startDate;
+		LocalDate finalDate;
+		if("".equals(minDate) && "".equals(maxDate)) {
+			startDate = getToday().minusYears(1L);
+			finalDate = getToday();
+		}else {
+			startDate = LocalDate.parse(minDate);
+			finalDate = LocalDate.parse(maxDate);
+		}
+		
+		Page<SummaryProjection> page = repository.summary(startDate, finalDate, pageable);
+		
+		return page.map(x -> new SummaryDTO(x));
+	}
+	
+	private LocalDate getToday() {
+		LocalDate today = LocalDate.ofInstant(Instant.now(), ZoneId.systemDefault());
+		return today;
 	}
 }
