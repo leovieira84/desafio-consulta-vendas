@@ -5,6 +5,7 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -31,6 +32,8 @@ public class SaleService {
 		LocalDate startDate = minDate != null && !"".equals(minDate) ? LocalDate.parse(minDate) : today.minusYears(1L);
 		LocalDate finalDate = maxDate != null && !"".equals(maxDate) ? LocalDate.parse(maxDate) : today;
 		
-		return null;
+		List<Sale> vendas = repository.report(startDate, finalDate, name);
+		
+		return vendas.stream().map(x -> new ReportMinDTO(x)).collect(Collectors.toList());
 	}
 }
