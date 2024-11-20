@@ -39,17 +39,15 @@ public class SaleService {
 	}
 
 	public Page<SummaryDTO> sumary(String minDate, String maxDate, Pageable pageable) {
-		LocalDate startDate;
-		LocalDate finalDate;
-		if("".equals(minDate) && "".equals(maxDate)) {
-			startDate = getToday().minusYears(1L);
-			finalDate = getToday();
-		}else {
-			startDate = LocalDate.parse(minDate);
-			finalDate = LocalDate.parse(maxDate);
+		if("".equals(minDate) || "".equals(maxDate)) {
+			LocalDate startDate = getToday().minusYears(1L);
+			LocalDate finalDate = getToday();
+			
+			minDate = startDate.toString();
+			maxDate = finalDate.toString();
 		}
 		
-		Page<SummaryProjection> page = repository.summary(startDate, finalDate, pageable);
+		Page<SummaryProjection> page = repository.summary(minDate, maxDate, pageable);
 		
 		return page.map(x -> new SummaryDTO(x));
 	}

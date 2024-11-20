@@ -20,5 +20,5 @@ public interface SaleRepository extends JpaRepository<Sale, Long> {
 							+ "JOIN TB_SELLER seller ON seller.id = sale.seller_id "
 							+ "WHERE sale.date BETWEEN :minDate AND :maxDate "
 							+ "GROUP BY seller.name")
-	public Page<SummaryProjection> summary(LocalDate minDate, LocalDate maxDate, Pageable pageable);
+	public Page<SummaryProjection> summary(String minDate, String maxDate, Pageable pageable);
 }
