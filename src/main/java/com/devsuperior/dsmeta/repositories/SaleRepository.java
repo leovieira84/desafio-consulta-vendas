@@ -10,6 +10,6 @@ import com.devsuperior.dsmeta.entities.Sale;
 
 public interface SaleRepository extends JpaRepository<Sale, Long> {
 	
-	@Query("SELECT obj FROM Sale obj WHERE obj.date BETWEEN :startDate AND :finalDate AND UPPER(obj.seller.name) LIKE UPPER(CONCAT('%' , :name , '%'))")
+	@Query("SELECT sale FROM Sale sale JOIN FETCH sale.seller seller WHERE sale.date BETWEEN :startDate AND :finalDate AND UPPER(seller.name) LIKE UPPER(CONCAT('%' , :name , '%'))")
 	public List<Sale> report(LocalDate startDate, LocalDate finalDate, String name);
 }
