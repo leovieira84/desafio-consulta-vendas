@@ -3,11 +3,11 @@ package com.devsuperior.dsmeta.services;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
-import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.devsuperior.dsmeta.dto.ReportMinDTO;
@@ -27,13 +27,13 @@ public class SaleService {
 		return new SaleMinDTO(entity);
 	}
 	
-	public List<ReportMinDTO> report(String minDate, String maxDate, String name){
+	public Page<ReportMinDTO> report(String minDate, String maxDate, String name, Pageable pageable){
 		LocalDate today = LocalDate.ofInstant(Instant.now(), ZoneId.systemDefault());
 		LocalDate startDate = minDate != null && !"".equals(minDate) ? LocalDate.parse(minDate) : today.minusYears(1L);
 		LocalDate finalDate = maxDate != null && !"".equals(maxDate) ? LocalDate.parse(maxDate) : today;
 		
-		List<Sale> vendas = repository.report(startDate, finalDate, name);
+		Page<Sale> vendas = repository.report(startDate, finalDate, name, pageable);
 		
-		return vendas.stream().map(x -> new ReportMinDTO(x)).collect(Collectors.toList());
+		return vendas.map(x -> new ReportMinDTO(x));
 	}
 }
